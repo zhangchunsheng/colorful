@@ -4,21 +4,16 @@ function init() {
     MatrixManager = new NS.MatrixManager();
 
     //0 for none, 1 for orange. 2 for yellow, 3 for green;
+    position = 0;
     square = 1;
-    column = MatrixManager.getColumn(0);
-
-    showState()
+    column = MatrixManager.src[position];
     
-    launch();
-
-    showState();
-    //Initialize Stage
-    //initStage();
+    drawStage();
 
     //Update stage will render next frame
     stage.update();
 }
 
 function showState(){
-	alert("square:"+square+"  "+"column:"+column);
+	alert("square:"+square+"  columns:"+MatrixManager.src);
 }
