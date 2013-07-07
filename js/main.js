@@ -128,7 +128,7 @@ this.colorful = this.colorful || {};
         s.addEventListener("click", function() {
             var i = 0;
             var flag = 0;
-            for(i = 0; i < matrixManager.width; i++) {
+            for(i = matrixManager.width - 1; i > -1 ; i--) {
                 if(column[i] == 0 || square == column[i]) {
                     if(square == column[i]) {
                         column[i] = 0;
