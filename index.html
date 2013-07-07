@@ -7,10 +7,25 @@
         <script type="text/javascript" src="js/lib/createjs.min.js"></script>
 
         <script type="text/javascript" src="js/core.js"></script>
+        <script type="text/javascript" src="js/MatrixManager.js"></script>
+        <script type="text/javascript" src="js/main.js"></script>
         <script type="text/javascript" src="js/math.js"></script>
         <script type="text/javascript" src="js/utils/utils.js"></script>
         <script type="text/javascript" src="js/level/mapReader.js"></script>
         <script type="text/javascript" src="js/ui/Rect.js"></script>
+        <script type="text/javascript" src="js/resources.js"></script>
+        <script type="text/javascript" src="js/Loading.js"></script>
+        <style type="text/css">
+            body {
+                background: #000000;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: moz-none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+        </style>
     </head>
 
     <body>
@@ -18,7 +33,64 @@
             <canvas id="gameCanvas" width="640" height="960"></canvas>
         </div>
         <script type="text/javascript">
+            var canvas;
+            var loaderBar;
+            var stage;
+            var bar;
+            var imageContainer;
+            var currentImage;
+            var loaderWidth;
+            var loaderColor;
+            var borderPadding;
+            var preload;
+            var oldItem;
+            var bg;
+            var matrixManager;
+            var matrixContainer;
+            var controllerContainer;
+            var mapData;
+
+            function handleFileLoaded(event) {
+                console.log(event);
+                var item = event.item;
+                var id = item.id;
+                var result = event.result;
+
+                if(event.item.src.indexOf("levels") >= 0) {
+                    mapData = colorful.mapReader.read(result);
+                } else if(id == "bg") {
+                    bg = new createjs.Bitmap(result);
+                    bg.x = 0;
+                    bg.y = 0;
+                    bg.scaleX = canvas.width / result.width;
+                    bg.scaleY = canvas.height / result.height;
+                    stage.addChild(bg);
+                }
+                stage.update();
+            }
+
+            function handleComplete(event) {
+                colorful.initRectContainer();
+                colorful.drawRectController();
+                colorful.drawLeftButton();
+                colorful.drawMiddleButton();
+                colorful.drawRightButton();
+
+                matrixManager.setMatrix(mapData);
+                matrixManager.drawMatrix();
+
+                colorful.drawController();
+
+                stage.update();
+            }
+
+            function handleFileError(event) {
+                console.log(event);
+            }
+
             colorful.init();
+            var loading = new colorful.Loading(handleFileLoaded, handleComplete, handleFileError);
+            loading.loadManifest(resources);
         </script>
     </body>
 </html>
