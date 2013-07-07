@@ -25,6 +25,36 @@ this.colorful = this.colorful || {};
     };
 
     colorful.tick = function() {
+        var h = canvas.height;
+        var w = canvas.width;
+        if(effect != null) {
+            for (var i = 0; i < effect.effectContainer.getNumChildren(); i++) {
+                var rect = effect.effectContainer.getChildAt(i);
+
+                // apply gravity and friction
+                rect.vY += 2;
+                rect.vX *= 0.98;
+
+                // update position, scale, and alpha:
+                rect.x += rect.vX;
+                rect.y += rect.vY;
+                rect.alpha += rect.vA;
+
+
+                // remove sparkles that are no longer visible or are stalled:
+                if (rect.alpha <= 0 || rect.y>=h && rect.vY < 10) {
+                    effect.effectContainer.removeChildAt(i);
+                }
+
+                //bounce sparkles off the bottom
+                if (rect.y > h) {
+                    rect.vY *= -(Math.random()*0.4+0.4);
+                    rect.y -= rect.y % h;
+                }
+                if (rect.x >= w || rect.x <= 0) { rect.vX *= -1; }
+            }
+        }
+
         stage.update(event);
     };
 
@@ -128,10 +158,12 @@ this.colorful = this.colorful || {};
         s.addEventListener("click", function() {
             var i = 0;
             var flag = 0;
+            var index = 0;
             for(i = matrixManager.width - 1; i > -1 ; i--) {
                 if(column[i] == 0 || square == column[i]) {
                     if(square == column[i]) {
                         column[i] = 0;
+                        index = i;
                         flag = 1;
                     }
                 } else {
@@ -141,6 +173,10 @@ this.colorful = this.colorful || {};
                     column[i] = temp;
                     break;
                 }
+            }
+            if(flag == 1) {
+                effect = new colorful.Effect();
+                effect.createRect(position * matrixManager.width, index * matrixManager.height, 5, 5, 10, position * matrixManager.width);
             }
             matrixManager.drawMatrix();
             square = matrixManager.resetSquare(square);
